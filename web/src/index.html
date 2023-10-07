@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <meta name="HandheldFriendly" content="true" />
+        
+        <title>YouTune</title>
+        <link rel="shortcut icon"
+              href="<%= require('./favicon.ico').default %>"
+              type="image/x-icon"
+        />
+
+        <link rel="icon"
+              href="<%= require('./favicon.ico').default %>"
+              type="image/x-icon"
+        />
+
+        <link rel="stylesheet"
+              href="<%= require('./style.css').default %>"
+              type="text/css"
+        />
+        
+        <script>
+            var process = undefined;
+
+            if (window.Notification)
+                Notification.requestPermission();
+
+            window.onerror = (message, source, lineno, colno, error) => {
+                console.log(source);
+                console.log(error);
+                console.log(message);
+
+                let app = document.getElementById("app");
+                let header = document.getElementById("header");
+                if (!header) {
+                    header = document.createElement("h1");
+                    header.setAttribute("id", "header");
+                    app.appendChild(header);
+                }
+                
+                let text = document.getElementById("text");
+                if (!text) {
+                    text = document.createElement("div");
+                    text.setAttribute("id", "text");
+                    app.appendChild(text);
+                }
+                
+                header.textContent = error;
+                text.textContent = message;
+            }
+            window.setImmediate = window.setTimeout;
+            window.isUpdateAvailable = new Promise(function(resolve, reject) {
+                // lazy way of disabling service workers while developing
+                if ('serviceWorker' in navigator) {
+                    // register service worker file
+                    navigator.serviceWorker.register('/service-worker.js')
+                        .then(reg => {
+                            reg.onupdatefound = () => {
+                                const installingWorker = reg.installing;
+                                installingWorker.onstatechange = () => {
+                                    switch (installingWorker.state) {
+                                        case 'installed':
+                                            if (navigator.serviceWorker.controller)
+                                                // new update available
+                                                return resolve(true);
+                                                
+                                            else
+                                                // no update available
+                                                return resolve(false);
+                                    }
+                                };
+                            };
+                        })
+
+                        .catch(err => console.error('[SW ERROR]', err));
+                } else {
+                    resolve(false);
+                }
+            });
+       </script>
+    </head>
+    <body>
+        <div id="app"></div>
+    </body>
+</html>
