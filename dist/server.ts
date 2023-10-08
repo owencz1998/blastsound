@@ -7,7 +7,7 @@ app.use(async (ctx, next) => {
     try {
         await ctx.send({
             root: `${Deno.cwd()}/web`,
-            index: 'app.js',
+            index: 'index.html',
         });
     } catch {
         await next();
@@ -19,7 +19,7 @@ app.use((ctx) => {
     // handle index.html not found
     if (
         ctx.request.url.pathname === '/' ||
-        ctx.request.url.pathname === '/web/app.js'
+        ctx.request.url.pathname === '/web/imdex.html'
     ) {
         ctx.response.status = 404;
         ctx.response.body = 'Not found.\nSeems index.html is missing.';
