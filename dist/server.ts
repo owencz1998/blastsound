@@ -6,8 +6,8 @@ const app = new Application();
 app.use(async (ctx, next) => {
     try {
         await ctx.send({
-            root: `${Deno.cwd()}/web/src`,
-            index: 'index.html',
+            root: `${Deno.cwd()}/web`,
+            index: 'app.js',
         });
     } catch {
         await next();
@@ -19,7 +19,7 @@ app.use((ctx) => {
     // handle index.html not found
     if (
         ctx.request.url.pathname === '/' ||
-        ctx.request.url.pathname === '/web/src/index.html'
+        ctx.request.url.pathname === '/web/app.js'
     ) {
         ctx.response.status = 404;
         ctx.response.body = 'Not found.\nSeems index.html is missing.';
